@@ -16,6 +16,9 @@
          - neovim
          - projectM-pulseaudio
          - podman
+         - pandoc
+         - remmina-plugins-rdp
+         - remmina-plugins-spice
      - name: install flatpaks
        flatpak:
          name: "{{ flatpaks }}"
@@ -27,3 +30,10 @@
          - org.mozilla.firefox
          - org.signal.Signal
          - org.telegram
+     - name: install yum groups
+       yum:
+         name: "{{ yum_groups }}"
+       vars:
+         yum_groups:
+         - "@development-tools"
+         - "@virtualization"
