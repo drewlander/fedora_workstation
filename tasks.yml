@@ -1,0 +1,29 @@
+---
+- name: all tasks
+  hosts: all
+  tasks:
+     - name: install packages
+       package:
+         name: "{{ packages }}"
+       vars:
+         packages:
+         - emacs
+         - audacious-plugins-exotic
+         - audacious-plugins-freeworld
+         - audacious
+         - mpv
+         - vlc
+         - neovim
+         - projectM-pulseaudio
+         - podman
+     - name: install flatpaks
+       flatpak:
+         name: "{{ flatpaks }}"
+       vars:
+         flatpaks:
+         - org.chromium.Chromium
+         - com.slack.Slack
+         - com.discordapp.Discord
+         - org.mozilla.firefox
+         - org.signal.Signal
+         - org.telegram
