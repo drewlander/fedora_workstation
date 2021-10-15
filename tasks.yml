@@ -19,6 +19,7 @@
          - pandoc
          - remmina-plugins-rdp
          - remmina-plugins-spice
+         - pavucontrol
      - name: install flatpaks
        flatpak:
          name: "{{ flatpaks }}"
@@ -30,6 +31,9 @@
          - org.mozilla.firefox
          - org.signal.Signal
          - org.telegram
+         - io.gitlab.librewolf-community
+         - org.freedesktop.Platform.ffmpeg-full/x86_64/19.08 
+         - org.freedesktop.Platform.ffmpeg-full/x86_64/20.08
      - name: install yum groups
        yum:
          name: "{{ yum_groups }}"
