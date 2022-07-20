@@ -2,6 +2,26 @@
 - name: all tasks
   hosts: all
   tasks:
+     - name: Importing (free) key
+       ansible.builtin.rpm_key:
+        state: present
+        key: https://rpmfusion.org/keys?action=AttachFile&do=get&target=RPM-GPG-KEY-rpmfusion-free-fedora-2020
+
+     - name: Importing (non-free) key
+       ansible.builtin.rpm_key:
+        state: present
+        key: https://rpmfusion.org/keys?action=AttachFile&do=get&target=RPM-GPG-KEY-rpmfusion-nonfree-fedora-2020
+     - name: Enable the RPM Fusion repository
+       dnf:
+         name: "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ansible_distribution_major_version}}.noarch.rpm"
+         state: present
+       when: ansible_distribution == 'Fedora'
+     - name: Enable the RPM Fusion nonfree repository
+       dnf:
+         name: "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ansible_distribution_major_version}}.noarch.rpm"
+         state: present
+       when: ansible_distribution == 'Fedora'
+
      - name: install packages
        package:
          name: "{{ packages }}"
@@ -21,17 +41,26 @@
          - remmina-plugins-spice
          - pavucontrol
          - httpie
+         - nextcloud-client-dolphin
+         - nextcloud-client
+         - gcc-c++
+         - libdrm-devel
+         - make
+         - dkms
+         - kernel-devel
+         - rpmdevtools
+         - ripgrep
+         - fd-find
+         - clang
+     - name: add flathub repo
+       ansible.builtin.shell:
+         cmd: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
      - name: install flatpaks
        flatpak:
          name: "{{ flatpaks }}"
        vars:
          flatpaks:
          - org.chromium.Chromium
-         - com.slack.Slack
-         - com.discordapp.Discord
-         - org.mozilla.firefox
-         - org.signal.Signal
-         - org.telegram
          - io.gitlab.librewolf-community
          - org.freedesktop.Platform.ffmpeg-full/x86_64/19.08 
          - org.freedesktop.Platform.ffmpeg-full/x86_64/20.08
@@ -43,3 +72,9 @@
          yum_groups:
          - "@development-tools"
          - "@virtualization"
+
+     - name: Enable libvirtd
+       ansible.builtin.systemd:
+         name: libvirtd.service
+         state: started
+         enabled: yes
