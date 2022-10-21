@@ -1,7 +1,37 @@
 ---
 - name: all tasks
   hosts: all
+  vars:
+    homeuser: <change_to_your_username>
   tasks:
+     - name: copy aliases dotfile to user
+       copy:
+         src: .aliases
+         dest: /home/{{ homeuser }}/.aliases
+         owner: "{{ homeuser }}"
+         group: "{{ homeuser }}"
+         mode: 0644
+     - name: add .aliases to .bashrc
+       lineinfile:
+         path: /home/{{ homeuser }}/.bashrc
+         line: 'source ~/.aliases'
+     - name: remove .emacs file
+       ansible.builtin.file:
+         path: /home/{{ homeuser }}/.emacs
+         state: absent
+     - name: Create emacs.d directory
+       ansible.builtin.file:
+        path: /home/{{ homeuser }}/.emacs.d
+        state: directory
+        mode: '0755'
+        owner: "{{ homeuser }}"
+     - name: copy init.el to .emacs.d directory
+       copy:
+         src: init.el
+         dest: /home/{{ homeuser }}/.emacs.d
+         owner: "{{ homeuser }}"
+         group: "{{ homeuser }}"
+         mode: 0644
      - name: Importing (free) key
        ansible.builtin.rpm_key:
         state: present
@@ -66,6 +96,10 @@
          - org.freedesktop.Platform.ffmpeg-full/x86_64/19.08 
          - org.freedesktop.Platform.ffmpeg-full/x86_64/20.08
          - net.sourceforge.projectM
+         - com.github.tchx84.Flatseal
+         - org.signal.Signal
+         - com.discordapp.Discord
+         - im.riot.Riot
      - name: install yum groups
        yum:
          name: "{{ yum_groups }}"
